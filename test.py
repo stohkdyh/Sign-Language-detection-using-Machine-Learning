@@ -11,6 +11,10 @@ import mediapipe as mp
 mp_holistic = mp.solutions.holistic # Holistic model
 mp_drawing = mp.solutions.drawing_utils # Drawing utilities
 
+cap = cv2.VideoCapture(0)
+cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1920)
+cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 1200)
+
 def mediapipe_detection(image, model):
     image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB) # COLOR CONVERSION BGR 2 RGB
     image.flags.writeable = False                  # Image is no longer writeable
@@ -38,36 +42,31 @@ def draw_styled_landmarks(image, results):
     # Draw right hand connections  
     mp_drawing.draw_landmarks(image, results.right_hand_landmarks, mp_holistic.HAND_CONNECTIONS, mp_drawing.DrawingSpec(color=(245,117,66), thickness=2, circle_radius=4), mp_drawing.DrawingSpec(color=(245,66,230), thickness=2, circle_radius=2))
 
-cap = cv2.VideoCapture(1)
+def close_windows():
+    cv2.destroyAllWindows()
+    cap.release()
+    exit()
+
+
 with mp_holistic.Holistic(min_detection_confidence=0.5, min_tracking_confidence=0.5) as holistic:
     while cap.isOpened():
 
         # Read feed
-        ret, frame = cap.read()
+        _, frame = cap.read()
 
         # Make detections
         image, results = mediapipe_detection(frame, holistic)
-        print(results)
+        # print(results)
         
         # Draw landmarks
         draw_styled_landmarks(image, results)
 
+
+        mirror_cam = cv2.flip(image, 1)
+        # mirror_cam = bigger = cv2.resize(cv2.flip(image, 1), (1050, 1610))
         # Show to screen
-        cv2.imshow('OpenCV Feed', image)
+        cv2.imshow('OpenCV Feed', mirror_cam)
 
         # Break gracefully
-        if cv2.waitKey(10) & 0xFF == ord('q'):
-            break
-    cap.release()
-    cv2.destroyAllWindows()
-    
-print(len(results.pose_landmarks.landmark))
-
-    
-# while cap.isOpened():
-#     ret, frame = cap.read()
-#     cv2.imshow('OpenCV Feed', frame)
-#     if cv2.waitKey(10) & 0xFF == ord('q'):
-#         break
-# cap.release()
-# cv2.destroyAllWindows()
+        if cv2.waitKey(1) & 0xFF == ord('q'):
+            close_windows()
