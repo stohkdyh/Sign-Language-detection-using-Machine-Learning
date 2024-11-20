@@ -1,5 +1,7 @@
 CREATE DATABASE db_signlanguage;
 USE db_signlanguage;
+SET @@global.sql_mode= '';
+select @@global.sql_mode from dual;
 
 CREATE TABLE actions (
     action_id INT AUTO_INCREMENT PRIMARY KEY,

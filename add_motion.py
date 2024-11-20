@@ -109,8 +109,11 @@ def add_motion():
                     pose, face, lh, rh = extract_keypoints(results)
 
                     # Simpan keypoints ke tabel keyframes
-                    cursor.execute("INSERT INTO keyframes (keyframe_num, sequence_id) VALUES (%s, %s)", (frame_num, sequence_id))
-                    keyframe_id = cursor.lastrowid  # Ambil ID keyframe yang baru saja dimasukkan
+                    cursor.execute("INSERT INTO keyframes (keyframe_num, sequence_id) VALUES (%s, %s)", (frame_num, sequence_id,))
+                    conn.commit()
+                    cursor.execute("SELECT keyframe_id FROM keyframes WHERE keyframe_num=%s", (frame_num,))
+                    keyframe_id = cursor.fetchone()[0]  # Ambil ID keyframe yang baru saja dimasukkan
+
 
                     # Simpan pose landmarks
                     for i in range(len(pose) // 4):
@@ -145,14 +148,6 @@ def add_motion():
     conn.commit()
     cursor.close()
     conn.close()
-
-# def add_motion():
-#     dialog = ctk.CTkInputDialog(text="Masukkan Bahasa Isyarat yang ingin anda tambahkan", title="Tambah Isyarat")
-#     action = dialog.get_input()
-#     conn = connect_to_db()
-#     cursor = conn.cursor()
-#     cursor.execute("INSERT INTO actions (action_name) VALUES (%s)", (action,))
-#     conn.commit()
 
     cursor.close()
     conn.close()
