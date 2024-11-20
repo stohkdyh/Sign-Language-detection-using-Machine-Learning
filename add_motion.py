@@ -114,7 +114,6 @@ def add_motion():
                     cursor.execute("SELECT keyframe_id FROM keyframes WHERE keyframe_num=%s", (frame_num,))
                     keyframe_id = cursor.fetchone()[0]  # Ambil ID keyframe yang baru saja dimasukkan
 
-
                     # Simpan pose landmarks
                     for i in range(len(pose) // 4):
                         cursor.execute("INSERT INTO pose_landmarks (x, y, z, visibility, keyframe_id) VALUES (%s, %s, %s, %s, %s)",
